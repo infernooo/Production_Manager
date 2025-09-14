@@ -16,7 +16,9 @@ import MillerReportScreen from './MillerReportScreen';
 import TotalsScreen from './TotalsScreen';
 import PasswordScreen from './PasswordScreen'; 
 import AdminScreen from './AdminScreen';
-import DispatchSummaryScreen from './DispatchSummaryScreen'; // Import the new screen
+import DispatchSummaryScreen from './DispatchSummaryScreen';
+import MoistureCorrectionScreen from './MoistureCorrectionScreen';
+import TmWeightmentScreen from './TmWeightmentScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -69,6 +71,8 @@ function MainDrawerNavigator() {
       <Drawer.Screen name="EditTotals" component={TotalsScreen} options={{ title: 'Edit Totals' }} />
       <Drawer.Screen name="Admin" component={AdminScreen} options={{ title: 'Admin Settings' }} />
       <Drawer.Screen name="DispatchSummary" component={DispatchSummaryScreen} options={{ title: 'Dispatch Summary' }} />
+      <Drawer.Screen name="MoistureCorrection" component={MoistureCorrectionScreen} options={{ title: 'Moisture Correction' }} />
+      <Drawer.Screen name="TmWeightment" component={TmWeightmentScreen} options={{ title: 'TM Weightment' }} />
     </Drawer.Navigator>
   );
 }

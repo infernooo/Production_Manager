@@ -1,0 +1,362 @@
+[
+  {
+    "id": "202",
+    "data": {
+      "grade": "M15",
+      "SSD_moisture": {
+        "20mm": 0.65,
+        "10mm": 0.83,
+        "Sand": 1.2
+      },
+      "components": {
+        "Cement": 125,
+        "GGBS": 125,
+        "Flyash": 0,
+        "UGGBS": 0,
+        "20mm": 630,
+        "10mm": 629,
+        "Sand": 815,
+        "Water": 125,
+        "ADMIXTURE": 3.75,
+        "CRYSTALLINE": 0,
+        "CI": 0
+      }
+    }
+  },
+  {
+    "id": "229",
+    "data": {
+      "grade": "M40",
+      "SSD_moisture": {
+        "20mm": 0.65,
+        "10mm": 0.83,
+        "Sand": 1.13
+      },
+      "components": {
+        "Cement": 205,
+        "GGBS": 205,
+        "Flyash": 47,
+        "UGGBS": 0,
+        "20mm": 562,
+        "10mm": 561,
+        "Sand": 726,
+        "Water": 155.8,
+        "ADMIXTURE": 4.1,
+        "CRYSTALLINE": 3.28,
+        "CI": 3
+      }
+    }
+  },
+  {
+    "id": "201",
+    "data": {
+      "grade": "M25",
+      "SSD_moisture": {
+        "20mm": 0.65,
+        "10mm": 0.83,
+        "Sand": 1.2
+      },
+      "components": {
+        "Cement": 165,
+        "GGBS": 165,
+        "Flyash": 0,
+        "UGGBS": 0,
+        "20mm": 603,
+        "10mm": 603,
+        "Sand": 780,
+        "Water": 132,
+        "ADMIXTURE": 2.97,
+        "CRYSTALLINE": 0,
+        "CI": 0
+      }
+    }
+  },
+  {
+    "id": "98",
+    "data": {
+      "grade": "M50",
+      "SSD_moisture": {
+        "20mm": 0.64,
+        "10mm": 0.8,
+        "Sand": 1.15
+      },
+      "components": {
+        "Cement": 383,
+        "GGBS": 67,
+        "Flyash": 0,
+        "UGGBS": 9,
+        "20mm": 566,
+        "10mm": 560,
+        "Sand": 733,
+        "Water": 138,
+        "ADMIXTURE": 4.8,
+        "CRYSTALLINE": 3.7,
+        "CI": 3
+      }
+    }
+  },
+  {
+    "id": "126",
+    "data": {
+      "grade": "M30",
+      "SSD_moisture": {
+        "20mm": 0.64,
+        "10mm": 0.8,
+        "Sand": 1.15
+      },
+      "components": {
+        "Cement": 180,
+        "GGBS": 180,
+        "Flyash": 0,
+        "UGGBS": 0,
+        "20mm": 585,
+        "10mm": 584,
+        "Sand": 755,
+        "Water": 144,
+        "ADMIXTURE": 4.32,
+        "CRYSTALLINE": 3.2,
+        "CI": 3
+      }
+    }
+  },
+  {
+    "id": "225",
+    "data": {
+      "grade": "M55",
+      "SSD_moisture": {
+        "20mm": 0.64,
+        "10mm": 0.8,
+        "Sand": 1.15
+      },
+      "components": {
+        "Cement": 240,
+        "GGBS": 240,
+        "Flyash": 0,
+        "UGGBS": 20,
+        "20mm": 532,
+        "10mm": 527,
+        "Sand": 689,
+        "Water": 160,
+        "ADMIXTURE": 5.25,
+        "CRYSTALLINE": 4,
+        "CI": 3
+      }
+    }
+  },
+  {
+    "id": "220",
+    "data": {
+      "grade": "M40",
+      "SSD_moisture": {
+        "20mm": 0.65,
+        "10mm": 0.83,
+        "Sand": 1.13
+      },
+      "components": {
+        "Cement": 200,
+        "GGBS": 200,
+        "Flyash": 0,
+        "UGGBS": 0,
+        "20mm": 575,
+        "10mm": 574,
+        "Sand": 742,
+        "Water": 144,
+        "ADMIXTURE": 3.6,
+        "CRYSTALLINE": 3.2,
+        "CI": 3
+      }
+    }
+  },
+  {
+    "id": "119",
+    "data": {
+      "grade": "M65",
+      "SSD_moisture": {
+        "20mm": 0.64,
+        "10mm": 0.8,
+        "Sand": 1.15
+      },
+      "components": {
+        "Cement": 391,
+        "GGBS": 69,
+        "Flyash": 40,
+        "UGGBS": 0,
+        "20mm": 556,
+        "10mm": 551,
+        "Sand": 720,
+        "Water": 135,
+        "ADMIXTURE": 5.25,
+        "CRYSTALLINE": 4,
+        "CI": 3
+      }
+    }
+  },
+  {
+    "id": "203",
+    "data": {
+      "grade": "M15",
+      "SSD_moisture": {
+        "20mm": 0.65,
+        "10mm": 0.83,
+        "Sand": 1.13
+      },
+      "components": {
+        "Cement": 148.5,
+        "GGBS": 67.5,
+        "Flyash": 54,
+        "UGGBS": 0,
+        "20mm": 612,
+        "10mm": 611,
+        "Sand": 791,
+        "Water": 135,
+        "ADMIXTURE": 4.05,
+        "CRYSTALLINE": 3.4,
+        "CI": 3
+      }
+    }
+  },
+  {
+    "id": "204",
+    "data": {
+      "grade": "M25",
+      "SSD_moisture": {
+        "20mm": 0.65,
+        "10mm": 0.83,
+        "Sand": 1.13
+      },
+      "components": {
+        "Cement": 192.5,
+        "GGBS": 87.5,
+        "Flyash": 70,
+        "UGGBS": 0,
+        "20mm": 585,
+        "10mm": 584,
+        "Sand": 757,
+        "Water": 140,
+        "ADMIXTURE": 3.15,
+        "CRYSTALLINE": 3.4,
+        "CI": 3
+      }
+    }
+  },
+  {
+    "id": "205",
+    "data": {
+      "grade": "M40",
+      "SSD_moisture": {
+        "20mm": 0.65,
+        "10mm": 0.83,
+        "Sand": 1.13
+      },
+      "components": {
+        "Cement": 238,
+        "GGBS": 102,
+        "Flyash": 85,
+        "UGGBS": 0,
+        "20mm": 553,
+        "10mm": 552,
+        "Sand": 715,
+        "Water": 153,
+        "ADMIXTURE": 3.14,
+        "CRYSTALLINE": 3.4,
+        "CI": 3
+      }
+    }
+  },
+  {
+    "id": "99",
+    "data": {
+      "grade": "M50",
+      "SSD_moisture": {
+        "20mm": 0.65,
+        "10mm": 0.83,
+        "Sand": 1.2
+      },
+      "components": {
+        "Cement": 353,
+        "GGBS": 62,
+        "Flyash": 47,
+        "UGGBS": 9,
+        "20mm": 554,
+        "10mm": 549,
+        "Sand": 717,
+        "Water": 141,
+        "ADMIXTURE": 5.2,
+        "CRYSTALLINE": 4,
+        "CI": 3
+      }
+    }
+  },
+  {
+    "id": "136",
+    "data": {
+      "grade": "M55",
+      "SSD_moisture": {
+        "20mm": 0.64,
+        "10mm": 0.8,
+        "Sand": 1.15
+      },
+      "components": {
+        "Cement": 357,
+        "GGBS": 63,
+        "Flyash": 50,
+        "UGGBS": 30,
+        "20mm": 550,
+        "10mm": 545,
+        "Sand": 712,
+        "Water": 135,
+        "ADMIXTURE": 5.75,
+        "CRYSTALLINE": 4,
+        "CI": 3
+      }
+    }
+  },
+  {
+    "id": "137",
+    "data": {
+      "grade": "M65",
+      "SSD_moisture": {
+        "20mm": 0.64,
+        "10mm": 0.8,
+        "Sand": 1.15
+      },
+      "components": {
+        "Cement": 349,
+        "GGBS": 61,
+        "Flyash": 50,
+        "UGGBS": 40,
+        "20mm": 550,
+        "10mm": 545,
+        "Sand": 712,
+        "Water": 135,
+        "ADMIXTURE": 5.25,
+        "CRYSTALLINE": 4,
+        "CI": 3
+      }
+    }
+  },
+  {
+    "id": "206",
+    "data": {
+      "grade": "M40",
+      "SSD_moisture": {
+        "20mm": 0.65,
+        "10mm": 0.83,
+        "Sand": 1.13
+      },
+      "components": {
+        "Cement": 238,
+        "GGBS": 102,
+        "Flyash": 85,
+        "UGGBS": 0,
+        "20mm": 546,
+        "10mm": 545,
+        "Sand": 706,
+        "Water": 162,
+        "ADMIXTURE": 3.83,
+        "CRYSTALLINE": 3.4,
+        "CI": 3
+      }
+    }
+  }
+]
