@@ -1,20 +1,99 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import 'react-native-gesture-handler';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function App() {
+// Import all of your screens
+import HomeScreen from './HomeScreen';
+import AddRequirementScreen from './AddRequirementScreen';
+import DispatchScreen from './DispatchScreen';
+import EditRequirementScreen from './EditRequirementScreen';
+import DprScreen from './DprScreen';
+import MillerReportScreen from './MillerReportScreen';
+import TotalsScreen from './TotalsScreen';
+import PasswordScreen from './PasswordScreen'; 
+import AdminScreen from './AdminScreen';
+import DispatchSummaryScreen from './DispatchSummaryScreen'; // Import the new screen
+
+const Stack = createNativeStackNavigator();
+const Drawer = createDrawerNavigator();
+
+function MainStackNavigator() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Stack.Navigator>
+      <Stack.Screen 
+        name="Dashboard" 
+        component={HomeScreen} 
+        options={({ navigation }) => ({ 
+          title: 'Active Requirements',
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ marginLeft: 15 }}>
+              <Ionicons name="menu" size={28} color="#007BFF" />
+            </TouchableOpacity>
+          ),
+          headerRight: () => (
+            <TouchableOpacity onPress={() => navigation.navigate('AddRequirement')} style={{ marginRight: 15 }}>
+              <Ionicons name="add-circle-outline" size={28} color="#007BFF" />
+            </TouchableOpacity>
+          ),
+        })} 
+      />
+      <Stack.Screen 
+        name="Dispatch" 
+        component={DispatchScreen} 
+        options={{ title: 'Log Dispatch' }} 
+      />
+      <Stack.Screen 
+        name="AddRequirement" 
+        component={AddRequirementScreen} 
+        options={{ title: 'New Requirement' }} 
+      />
+      <Stack.Screen 
+        name="EditRequirement" 
+        component={EditRequirementScreen} 
+        options={{ title: 'Edit Requirement' }} 
+      />
+    </Stack.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+function MainDrawerNavigator() {
+  return (
+    <Drawer.Navigator>
+      <Drawer.Screen name="Main" component={MainStackNavigator} options={{ title: 'Dashboard', headerShown: false }} />
+      <Drawer.Screen name="Dpr" component={DprScreen} options={{ title: 'Generate DPR' }} />
+      <Drawer.Screen name="MillerReport" component={MillerReportScreen} options={{ title: 'Miller Trip Summary' }} />
+      <Drawer.Screen name="EditTotals" component={TotalsScreen} options={{ title: 'Edit Totals' }} />
+      <Drawer.Screen name="Admin" component={AdminScreen} options={{ title: 'Admin Settings' }} />
+      <Drawer.Screen name="DispatchSummary" component={DispatchSummaryScreen} options={{ title: 'Dispatch Summary' }} />
+    </Drawer.Navigator>
+  );
+}
+
+function AppStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen 
+        name="Password" 
+        component={PasswordScreen} 
+        options={{ headerShown: false }} 
+      />
+      <Stack.Screen 
+        name="MainDrawer" 
+        component={MainDrawerNavigator} 
+        options={{ headerShown: false }} 
+      />
+    </Stack.Navigator>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <AppStack />
+    </NavigationContainer>
+  );
+}
