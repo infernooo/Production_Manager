@@ -3,7 +3,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native'; 
 import { Ionicons } from '@expo/vector-icons';
 
 // Import all of your screens
@@ -19,6 +19,10 @@ import AdminScreen from './AdminScreen';
 import DispatchSummaryScreen from './DispatchSummaryScreen';
 import MoistureCorrectionScreen from './MoistureCorrectionScreen';
 import TmWeightmentScreen from './TmWeightmentScreen';
+import HistoryScreen from './HistoryScreen';
+import DispatchHistoryScreen from './DispatchHistoryScreen';
+// NOTE: You still need to create CompletedRequirementsScreen
+import CompletedRequirementsScreen from './CompletedRequirementsScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -37,9 +41,16 @@ function MainStackNavigator() {
             </TouchableOpacity>
           ),
           headerRight: () => (
-            <TouchableOpacity onPress={() => navigation.navigate('AddRequirement')} style={{ marginRight: 15 }}>
-              <Ionicons name="add-circle-outline" size={28} color="#007BFF" />
-            </TouchableOpacity>
+            <View style={{ flexDirection: 'row', marginRight: 15 }}>
+              {/* NEW: History Icon */}
+              <TouchableOpacity onPress={() => navigation.navigate('History')} style={{ marginRight: 15 }}>
+                <Ionicons name="time-outline" size={28} color="#007BFF" />
+              </TouchableOpacity>
+              {/* Add Requirement Icon */}
+              <TouchableOpacity onPress={() => navigation.navigate('AddRequirement')}>
+                <Ionicons name="add-circle-outline" size={28} color="#007BFF" />
+              </TouchableOpacity>
+            </View>
           ),
         })} 
       />
@@ -57,6 +68,22 @@ function MainStackNavigator() {
         name="EditRequirement" 
         component={EditRequirementScreen} 
         options={{ title: 'Edit Requirement' }} 
+      />
+      {/* NEW: Add the new history-related screens to the stack navigator */}
+      <Stack.Screen 
+        name="History" 
+        component={HistoryScreen} 
+        options={{ title: 'History' }} 
+      />
+      <Stack.Screen 
+        name="DispatchHistory" 
+        component={DispatchHistoryScreen} 
+        options={{ title: 'Dispatch History' }} 
+      />
+      <Stack.Screen
+        name="CompletedRequirements"
+        component={CompletedRequirementsScreen}
+        options={{ title: 'Completed Requirements' }}
       />
     </Stack.Navigator>
   );

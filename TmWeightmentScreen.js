@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Button, TextInput, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { db } from './firebase';
-import { collection, addDoc, getDocs, deleteDoc, doc, getDoc, orderBy, query, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, deleteDoc, doc, orderBy, query, updateDoc, writeBatch, setDoc } from 'firebase/firestore';
 import Collapsible from 'react-native-collapsible';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -16,6 +16,8 @@ export default function TmWeightmentScreen() {
   const [tmRecipes, setTmRecipes] = useState({});
   const [tareWeights, setTareWeights] = useState({});
   const [collapsedEntries, setCollapsedEntries] = useState({});
+  const [selectedEntries, setSelectedEntries] = useState([]);
+  const [tareWeightsCollapsed, setTareWeightsCollapsed] = useState(true);
 
   useEffect(() => {
     fetchData();
@@ -146,7 +148,7 @@ export default function TmWeightmentScreen() {
     setLoading(true);
     try {
       const docRef = doc(db, 'tare_weights', millerNumber);
-      await updateDoc(docRef, { tareWeight: parseFloat(newTareWt) }, { merge: true });
+      await setDoc(docRef, { tareWeight: parseFloat(newTareWt) }, { merge: true });
       fetchTareWeights();
       setMillerNumber('');
       setNewTareWt('');
@@ -168,6 +170,41 @@ export default function TmWeightmentScreen() {
       Alert.alert('Error', 'Could not delete entry.');
     }
   };
+  
+  const handleDeleteSelected = async () => {
+    if (selectedEntries.length === 0) {
+      Alert.alert("No entries selected", "Please long-press on entries to select them for deletion.");
+      return;
+    }
+
+    Alert.alert(
+      "Confirm Deletion",
+      `Are you sure you want to delete ${selectedEntries.length} entries?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          onPress: async () => {
+            try {
+              const batch = writeBatch(db);
+              selectedEntries.forEach(id => {
+                const docRef = doc(db, 'tm_weightment', id);
+                batch.delete(docRef);
+              });
+              await batch.commit();
+              setSelectedEntries([]);
+              fetchEntries();
+              Alert.alert("Success", "Selected entries have been deleted.");
+            } catch (error) {
+              console.error("Error deleting selected entries:", error);
+              Alert.alert("Error", "Could not delete selected entries.");
+            }
+          },
+          style: "destructive"
+        }
+      ]
+    );
+  };
 
   const toggleCollapse = (id) => {
     setCollapsedEntries(prev => ({
@@ -176,32 +213,48 @@ export default function TmWeightmentScreen() {
     }));
   };
 
-  const renderEntry = (entry) => (
-    <View key={entry.id} style={styles.entryContainer}>
-      <TouchableOpacity onPress={() => toggleCollapse(entry.id)}>
+  const toggleSelect = (id) => {
+    setSelectedEntries(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(entryId => entryId !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
+
+  const renderEntry = (entry) => {
+    const isSelected = selectedEntries.includes(entry.id);
+    return (
+      <TouchableOpacity
+        key={entry.id}
+        style={[styles.entryContainer, isSelected && styles.selectedEntry]}
+        onPress={() => toggleCollapse(entry.id)}
+        onLongPress={() => toggleSelect(entry.id)}
+      >
         <View style={styles.entryHeader}>
           <Text style={styles.headerText}>TM No: {entry.tmNumber} | Miller No: {entry.millerNumber}</Text>
           <Ionicons name={collapsedEntries[entry.id] ? 'chevron-down' : 'chevron-up'} size={24} color="#007BFF" />
         </View>
+        <Collapsible collapsed={collapsedEntries[entry.id]}>
+          <View style={styles.entryDetails}>
+            <Text>Grade: {entry.grade}</Text>
+            <Text>Quantity: {(entry.quantity || 0).toFixed(2)} cum</Text>
+            <Text>Gross Wt: {(entry.grossWt || 0).toFixed(2)} kg</Text>
+            <Text>Tare Wt: {(entry.tareWt || 0).toFixed(2)} kg</Text>
+            <Text>Net Wt: {(entry.netWt || 0).toFixed(2)} kg</Text>
+            <Text>Theoretical Qty: {(entry.theoraticalQty || 0).toFixed(2)} kg</Text>
+            <Text>Error: {(entry.error || 0).toFixed(2)} kg</Text>
+            <Text>Error %: {(entry.errorPercent || 0).toFixed(2)}%</Text>
+            <Text>Time: {new Date(entry.timestamp).toLocaleTimeString()}</Text>
+            <TouchableOpacity onPress={() => handleDeleteEntry(entry.id)} style={styles.deleteButton}>
+              <Text style={styles.deleteButtonText}>Delete</Text>
+            </TouchableOpacity>
+          </View>
+        </Collapsible>
       </TouchableOpacity>
-      <Collapsible collapsed={collapsedEntries[entry.id]}>
-        <View style={styles.entryDetails}>
-          <Text>Grade: {entry.grade}</Text>
-          <Text>Quantity: {(entry.quantity || 0).toFixed(2)} cum</Text>
-          <Text>Gross Wt: {(entry.grossWt || 0).toFixed(2)} kg</Text>
-          <Text>Tare Wt: {(entry.tareWt || 0).toFixed(2)} kg</Text>
-          <Text>Net Wt: {(entry.netWt || 0).toFixed(2)} kg</Text>
-          <Text>Theoretical Qty: {(entry.theoraticalQty || 0).toFixed(2)} kg</Text>
-          <Text>Error: {(entry.error || 0).toFixed(2)} kg</Text>
-          <Text>Error %: {(entry.errorPercent || 0).toFixed(2)}%</Text>
-          <Text>Time: {new Date(entry.timestamp).toLocaleTimeString()}</Text>
-          <TouchableOpacity onPress={() => handleDeleteEntry(entry.id)} style={styles.deleteButton}>
-            <Text style={styles.deleteButtonText}>Delete</Text>
-          </TouchableOpacity>
-        </View>
-      </Collapsible>
-    </View>
-  );
+    );
+  };
 
   if (loading && entries.length === 0) {
     return (
@@ -213,7 +266,7 @@ export default function TmWeightmentScreen() {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>TM Weightment</Text>
       
       <View style={styles.inputSection}>
@@ -221,6 +274,7 @@ export default function TmWeightmentScreen() {
         <TextInput
           style={styles.input}
           placeholder="Miller No."
+          placeholderTextColor="#495057"
           keyboardType="numeric"
           onChangeText={setMillerNumber}
           value={millerNumber}
@@ -228,6 +282,7 @@ export default function TmWeightmentScreen() {
         <TextInput
           style={styles.input}
           placeholder="New Tare Wt (kg)"
+          placeholderTextColor="#495057"
           keyboardType="numeric"
           onChangeText={setNewTareWt}
           value={newTareWt}
@@ -240,10 +295,34 @@ export default function TmWeightmentScreen() {
       </View>
 
       <View style={styles.inputSection}>
+        <Text style={styles.subtitle}>View Saved Tare Weights</Text>
+        <TouchableOpacity style={styles.viewTareWeightsButton} onPress={() => setTareWeightsCollapsed(!tareWeightsCollapsed)}>
+          <Text style={styles.viewTareWeightsText}>
+            {tareWeightsCollapsed ? 'Show Weights' : 'Hide Weights'}
+          </Text>
+          <Ionicons name={tareWeightsCollapsed ? 'chevron-down' : 'chevron-up'} size={20} color="#007BFF" />
+        </TouchableOpacity>
+        <Collapsible collapsed={tareWeightsCollapsed}>
+          <View style={styles.tareWeightsList}>
+            {Object.keys(tareWeights).length > 0 ? (
+              Object.entries(tareWeights).map(([miller, weight]) => (
+                <View key={miller} style={styles.tareWeightItem}>
+                  <Text style={styles.tareWeightText}>Miller {miller}: {weight} kg</Text>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.infoText}>No tare weights saved yet.</Text>
+            )}
+          </View>
+        </Collapsible>
+      </View>
+
+      <View style={styles.inputSection}>
         <Text style={styles.subtitle}>Add New Entry</Text>
         <TextInput
           style={styles.input}
           placeholder="Trial Mix No"
+          placeholderTextColor="#495057"
           keyboardType="numeric"
           onChangeText={setTmNumber}
           value={tmNumber}
@@ -251,6 +330,7 @@ export default function TmWeightmentScreen() {
         <TextInput
           style={styles.input}
           placeholder="Quantity (cum)"
+          placeholderTextColor="#495057"
           keyboardType="numeric"
           onChangeText={setQuantity}
           value={quantity}
@@ -258,6 +338,7 @@ export default function TmWeightmentScreen() {
         <TextInput
           style={styles.input}
           placeholder="Miller Number"
+          placeholderTextColor="#495057"
           keyboardType="numeric"
           onChangeText={setMillerNumber}
           value={millerNumber}
@@ -265,6 +346,7 @@ export default function TmWeightmentScreen() {
         <TextInput
           style={styles.input}
           placeholder="Gross Wt (kg)"
+          placeholderTextColor="#495057"
           keyboardType="numeric"
           onChangeText={setGrossWt}
           value={grossWt}
@@ -277,6 +359,15 @@ export default function TmWeightmentScreen() {
       </View>
 
       <Text style={styles.subtitle}>Saved Entries</Text>
+      {selectedEntries.length > 0 && (
+        <View style={styles.deleteSelectedButton}>
+          <Button
+            title={`Delete ${selectedEntries.length} selected entries`}
+            onPress={handleDeleteSelected}
+            color="red"
+          />
+        </View>
+      )}
       {entries.length === 0 ? (
         <Text style={styles.infoText}>No entries saved yet.</Text>
       ) : (
@@ -288,9 +379,10 @@ export default function TmWeightmentScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 20,
     backgroundColor: '#f8f9fa',
+    paddingBottom: 50,
   },
   centered: {
     flex: 1,
@@ -332,6 +424,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     overflow: 'hidden',
   },
+  selectedEntry: {
+    backgroundColor: '#d1e7dd',
+    borderColor: '#0f5132',
+  },
   entryHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -356,6 +452,35 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  deleteSelectedButton: {
+    marginBottom: 10,
+  },
+  viewTareWeightsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  viewTareWeightsText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  tareWeightsList: {
+    marginTop: 10,
+  },
+  tareWeightItem: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderColor: '#eee',
+  },
+  tareWeightText: {
+    fontSize: 14,
   },
   infoText: {
     textAlign: 'center',

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Button, TextInput, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Button, TextInput, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { db } from './firebase';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 
 export default function MoistureCorrectionScreen() {
   const [tmRecipes, setTmRecipes] = useState({});
@@ -40,38 +40,42 @@ export default function MoistureCorrectionScreen() {
   const calculateMoistureCorrection = (recipe) => {
     const { components, SSD_moisture } = recipe;
 
-    // Calculate the (+/-) Water for each aggregate based on its SSD weight
     const waterCorrectionSand = (parseFloat(moistureContent.Sand || 0) - SSD_moisture.Sand) * components.Sand / 100;
     const waterCorrection10mm = (parseFloat(moistureContent['10mm'] || 0) - SSD_moisture['10mm']) * components['10mm'] / 100;
     const waterCorrection20mm = (parseFloat(moistureContent['20mm'] || 0) - SSD_moisture['20mm']) * components['20mm'] / 100;
 
     const totalWaterCorrection = waterCorrectionSand + waterCorrection10mm + waterCorrection20mm;
 
-    // Correct the weights of the components
     const correctedRecipe = {
       ...components,
-      Water: components.Water - totalWaterCorrection,
-      Sand: components.Sand + waterCorrectionSand,
-      '10mm': components['10mm'] + waterCorrection10mm,
-      '20mm': components['20mm'] + waterCorrection20mm,
+      Water: (components.Water - totalWaterCorrection) || 0,
+      Sand: (components.Sand + waterCorrectionSand) || 0,
+      '10mm': (components['10mm'] + waterCorrection10mm) || 0,
+      '20mm': (components['20mm'] + waterCorrection20mm) || 0,
     };
 
     return correctedRecipe;
   };
 
   const renderCorrectedRecipes = () => {
-    // Define the desired order of components
     const componentOrder = [
-      'Cement',
-      'GGBS',
+      'Cement(Ultratech)',
+      'GGBS(Tata)',
+      'GGBS(JSW)',
+      'GGBS(JSPL)',
       'Flyash',
       'UGGBS',
       '20mm',
       '10mm',
       'Sand',
       'Water',
+      'ADMIXTURE(Asian)',
+      'ADMIXTURE(Fosroc)',
       'ADMIXTURE',
+      'CI(Sika)',
       'CI',
+      'CRYSTALLINE(Penetron)',
+      'CRYSTALLINE(Shalimar)',
       'CRYSTALLINE',
     ];
 
@@ -91,12 +95,27 @@ export default function MoistureCorrectionScreen() {
               <Text style={styles.tableHeader}>Corrected Wt</Text>
             </View>
             {componentOrder.map(component => {
-              if (recipe.components[component] > 0) {
+              const originalWeight = recipe.components[component];
+              if (originalWeight && originalWeight > 0) {
+                const correctedWeight = corrected[component] || 0;
+                
+                let name = component;
+                let brand = '';
+
+                const brandMatch = component.match(/\(([^)]+)\)/);
+                if (brandMatch) {
+                  name = component.split('(')[0];
+                  brand = `(${brandMatch[1]})`;
+                }
+
                 return (
                   <View key={component} style={styles.tableRow}>
-                    <Text style={styles.tableCell}>{component}</Text>
-                    <Text style={styles.tableCell}>{recipe.components[component].toFixed(2)}</Text>
-                    <Text style={styles.tableCell}>{corrected[component].toFixed(2)}</Text>
+                    <View style={[styles.tableCell, { flexDirection: 'column' }]}>
+                      <Text>{name}</Text>
+                      {brand ? <Text style={styles.brandText}>{brand}</Text> : null}
+                    </View>
+                    <Text style={styles.tableCell}>{originalWeight.toFixed(2)}</Text>
+                    <Text style={styles.tableCell}>{correctedWeight.toFixed(2)}</Text>
                   </View>
                 );
               }
@@ -277,5 +296,9 @@ const styles = StyleSheet.create({
   tableCell: {
     flex: 1,
     padding: 8,
+  },
+  brandText: {
+    fontSize: 12,
+    color: '#6c757d',
   },
 });

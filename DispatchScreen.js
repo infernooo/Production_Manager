@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, Button, TouchableOpacity, Linking, Alert, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-// NEW: Import all the Firebase tools we need for this screen
 import { doc, getDoc, collection, addDoc, updateDoc, where, query, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
 
@@ -16,23 +15,19 @@ export default function DispatchScreen() {
   const [dispatchedQty, setDispatchedQty] = useState('');
   const [cumulativeQty, setCumulativeQty] = useState(0);
 
-  // This effect now loads all data directly from Firebase
   useEffect(() => {
     const loadData = async () => {
       try {
-        // 1. Get the specific requirement document from Firestore
         const reqDocRef = doc(db, 'requirements', requirementId);
         const reqDocSnap = await getDoc(reqDocRef);
         if (reqDocSnap.exists()) {
           setRequirement({ ...reqDocSnap.data(), id: reqDocSnap.id });
         }
 
-        // 2. Get all dispatches for this requirement to calculate the total
         const dispsQuery = query(collection(db, "dispatches"), where("requirementId", "==", requirementId));
         const querySnapshot = await getDocs(dispsQuery);
         const total = querySnapshot.docs.reduce((sum, doc) => sum + doc.data().dispatchedQty, 0);
         setCumulativeQty(total);
-
       } catch (e) {
         console.error('Failed to load data from Firebase', e);
       }
@@ -47,7 +42,6 @@ export default function DispatchScreen() {
     }
 
     try {
-      // 1. Save the new dispatch to the 'dispatches' collection in Firestore
       await addDoc(collection(db, 'dispatches'), {
         requirementId,
         plant,
@@ -57,8 +51,7 @@ export default function DispatchScreen() {
       });
 
       const total = cumulativeQty + parseFloat(dispatchedQty);
-      
-      // The message generation is the same
+
       const message =
         `*${plant} - Sualkuchi*\n` +
         `STR- ${requirement.structureType}\n` +
@@ -71,8 +64,8 @@ export default function DispatchScreen() {
       Linking.openURL(`whatsapp://send?text=${encodeURIComponent(message)}`)
         .catch(() => alert('Make sure WhatsApp is installed on your device'));
 
-      // 2. Check if the requirement should now be marked as complete
-      if (cumulativeQty < requirement.requiredQty && total >= requirement.requiredQty) {
+      // ✅ Always check if requirement is fulfilled (even if exceeded)
+      if (total >= requirement.requiredQty) {
         Alert.alert(
           "Target Reached",
           `Required quantity of ${requirement.requiredQty}m³ achieved.`,
@@ -84,7 +77,6 @@ export default function DispatchScreen() {
       } else {
         navigation.goBack();
       }
-
     } catch (e) {
       console.error('Failed to log dispatch to Firebase', e);
     }
@@ -93,11 +85,8 @@ export default function DispatchScreen() {
   const handleComplete = async (skipAlert = false) => {
     const completeAction = async () => {
       try {
-        // Find the specific requirement in Firestore and update its status
         const reqDocRef = doc(db, 'requirements', requirementId);
-        await updateDoc(reqDocRef, {
-          status: 'Completed'
-        });
+        await updateDoc(reqDocRef, { status: 'Completed' });
         navigation.goBack();
       } catch (e) {
         console.error('Failed to complete requirement in Firebase', e);
@@ -175,7 +164,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   plantSelector: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 20 },
-  plantButton: { borderWidth: 1, borderColor: '#007BFF', borderRadius: 5, paddingVertical: 10, paddingHorizontal: 30, },
+  plantButton: { borderWidth: 1, borderColor: '#007BFF', borderRadius: 5, paddingVertical: 10, paddingHorizontal: 30 },
   plantButtonSelected: { backgroundColor: '#007BFF' },
   plantButtonText: { color: '#007BFF', fontSize: 16, fontWeight: 'bold' },
   plantButtonTextSelected: { color: '#fff' },
